@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbit-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbit-consumer
+  template:
+    metadata:
+      labels:
+        app: rabbit-consumer
+    spec:
+      runtimeClassName: wasmtime-spin-v2
+      containers:
+      - name: rabbit-consumer
+        image: ghcr.io/mikkelhegn/rabbit-consumer:latest
+        command: ["/"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbit-consumer
+spec:
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  selector:
+    app: rabbit-consumer

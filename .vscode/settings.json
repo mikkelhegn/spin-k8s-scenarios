@@ -1,0 +1,9 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "apps/kv/Cargo.toml",
+        "apps/sql/Cargo.toml",
+        "apps/rabbit-consumer/Cargo.toml",
+        "apps/rabbit-producer/Cargo.toml",
+        "apps/rust-hello/Cargo.toml"
+    ]
+}

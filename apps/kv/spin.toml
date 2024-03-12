@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "kv"
+version = "0.1.0"
+authors = ["Mikkel Mørk Hegnhøj <mikkel@fermyon.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "kv"
+
+[component.kv]
+source = "target/wasm32-wasi/release/kv.wasm"
+key_value_stores = ["redis"]
+[component.kv.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]

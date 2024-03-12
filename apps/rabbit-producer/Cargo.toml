@@ -1,0 +1,11 @@
+[package]
+name = "rabbit-producer"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+amiquip = { version = "0.4", default-features = false }
+clap = { version = "4.4.18", features = ["derive"] }
+uuid = { version = "1.7.0", features = ["v4", "fast-rng"] }

@@ -1,0 +1,14 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: rabbit-binding
+spec:
+  type: bindings.rabbitmq
+  version: v1
+  metadata:
+  - name: queueName
+    value: "test"
+  - name: host
+    value: "amqp://rabbitmq"
+  - name: direction 
+    value: "input"

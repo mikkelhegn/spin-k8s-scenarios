@@ -1,0 +1,17 @@
+apiVersion: core.spinoperator.dev/v1alpha1
+kind: SpinApp
+metadata:
+  name: sql
+spec:
+  image: {{IMG_REPO}}
+  replicas: 1
+  executor: containerd-shim-spin
+  runtimeConfig:
+    sqliteDatabases:
+      - name: "sqlite"
+        type: "libsql"
+        options:
+          - name: "url"
+            value: "http://sqld:8080"
+          - name: "token"
+            value: ""

@@ -1,0 +1,15 @@
+apiVersion: core.spinoperator.dev/v1alpha1
+kind: SpinApp
+metadata:
+  name: kv
+spec:
+  image: {{IMG_REPO}}
+  replicas: 1
+  executor: containerd-shim-spin
+  runtimeConfig:
+    keyValueStores:
+      - name: "redis"
+        type: "redis"
+        options:
+          - name: "url"
+            value: "redis://redis"

@@ -1,0 +1,62 @@
+2024-03-12T23:06:25Z	INFO	setup	flag values	{"metricsAddr": "127.0.0.1:8080", "probeAddr": ":8082", "enableLeaderElection": true, "enableWebhooks": true}
+2024-03-12T23:06:25Z	INFO	controller-runtime.builder	Registering a mutating webhook	{"GVK": "core.spinoperator.dev/v1alpha1, Kind=SpinApp", "path": "/mutate-core-spinoperator-dev-v1alpha1-spinapp"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.webhook	Registering webhook	{"path": "/mutate-core-spinoperator-dev-v1alpha1-spinapp"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.builder	Registering a validating webhook	{"GVK": "core.spinoperator.dev/v1alpha1, Kind=SpinApp", "path": "/validate-core-spinoperator-dev-v1alpha1-spinapp"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.webhook	Registering webhook	{"path": "/validate-core-spinoperator-dev-v1alpha1-spinapp"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.builder	Registering a mutating webhook	{"GVK": "core.spinoperator.dev/v1alpha1, Kind=SpinAppExecutor", "path": "/mutate-core-spinoperator-dev-v1alpha1-spinappexecutor"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.webhook	Registering webhook	{"path": "/mutate-core-spinoperator-dev-v1alpha1-spinappexecutor"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.builder	Registering a validating webhook	{"GVK": "core.spinoperator.dev/v1alpha1, Kind=SpinAppExecutor", "path": "/validate-core-spinoperator-dev-v1alpha1-spinappexecutor"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.webhook	Registering webhook	{"path": "/validate-core-spinoperator-dev-v1alpha1-spinappexecutor"}
+2024-03-12T23:06:25Z	INFO	setup	starting manager
+2024-03-12T23:06:25Z	INFO	setup	version	{"version": "HEAD-f7068bc", "branch": "HEAD", "revision": "f7068bc8c1b2ae12ddb019f0bc34f70b68a4bb05", "builddate": "2024-03-08"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.metrics	Starting metrics server
+2024-03-12T23:06:25Z	INFO	controller-runtime.metrics	Serving metrics server	{"bindAddress": "127.0.0.1:8080", "secure": false}
+2024-03-12T23:06:25Z	INFO	starting server	{"kind": "health probe", "addr": "[::]:8082"}
+2024-03-12T23:06:25Z	INFO	controller-runtime.webhook	Starting webhook server
+2024-03-12T23:06:25Z	INFO	controller-runtime.certwatcher	Updated current TLS certificate
+2024-03-12T23:06:25Z	INFO	controller-runtime.webhook	Serving webhook server	{"host": "", "port": 9443}
+2024-03-12T23:06:25Z	INFO	controller-runtime.certwatcher	Starting certificate watcher
+I0312 23:06:25.545451       1 leaderelection.go:250] attempting to acquire leader lease spin-operator/90ba2d18.spinoperator.dev...
+I0312 23:06:41.134848       1 leaderelection.go:260] successfully acquired lease spin-operator/90ba2d18.spinoperator.dev
+2024-03-12T23:06:41Z	DEBUG	events	spin-operator-controller-manager-b4bb8f87f-qx4v8_75b0d8f3-77fb-4009-899d-de8761b0ab52 became leader	{"type": "Normal", "object": {"kind":"Lease","namespace":"spin-operator","name":"90ba2d18.spinoperator.dev","uid":"19abd281-fc7c-4958-9d8e-17567242efe3","apiVersion":"coordination.k8s.io/v1","resourceVersion":"1751"}, "reason": "LeaderElection"}
+2024-03-12T23:06:41Z	INFO	Starting EventSource	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp", "source": "kind source: *v1alpha1.SpinApp"}
+2024-03-12T23:06:41Z	INFO	Starting EventSource	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp", "source": "kind source: *v1.Deployment"}
+2024-03-12T23:06:41Z	INFO	Starting EventSource	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp", "source": "kind source: *v1.Service"}
+2024-03-12T23:06:41Z	INFO	Starting Controller	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp"}
+2024-03-12T23:06:41Z	INFO	Starting EventSource	{"controller": "spinappexecutor", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinAppExecutor", "source": "kind source: *v1alpha1.SpinAppExecutor"}
+2024-03-12T23:06:41Z	INFO	Starting Controller	{"controller": "spinappexecutor", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinAppExecutor"}
+2024-03-12T23:06:41Z	INFO	Starting workers	{"controller": "spinappexecutor", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinAppExecutor", "worker count": 1}
+2024-03-12T23:06:41Z	INFO	Starting workers	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp", "worker count": 1}
+2024-03-12T23:06:41Z	DEBUG	Reconciling SpinAppExecutor	{"controller": "spinappexecutor", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinAppExecutor", "SpinAppExecutor": {"name":"containerd-shim-spin","namespace":"default"}, "namespace": "default", "name": "containerd-shim-spin", "reconcileID": "c1a58e7d-36f2-4159-bf87-c049430f5ef7"}
+2024-03-12T23:06:41Z	DEBUG	Reconciling SpinApp	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp", "SpinApp": {"name":"sql","namespace":"default"}, "namespace": "default", "name": "sql", "reconcileID": "518879da-640c-4456-b580-43d99dbf88ae"}
+2024-03-12T23:06:41Z	DEBUG	built runtime config	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp", "SpinApp": {"name":"sql","namespace":"default"}, "namespace": "default", "name": "sql", "reconcileID": "518879da-640c-4456-b580-43d99dbf88ae", "component": "runtime_config_builder"}
+2024-03-12T23:06:41Z	INFO	Observed a panic in reconciler: runtime error: invalid memory address or nil pointer dereference	{"controller": "spinapp", "controllerGroup": "core.spinoperator.dev", "controllerKind": "SpinApp", "SpinApp": {"name":"sql","namespace":"default"}, "namespace": "default", "name": "sql", "reconcileID": "518879da-640c-4456-b580-43d99dbf88ae"}
+panic: runtime error: invalid memory address or nil pointer dereference [recovered]
+	panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x106d498]
+
+goroutine 211 [running]:
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller).Reconcile.func1()
+	/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.17.2/pkg/internal/controller/controller.go:116 +0x1a4
+panic({0x11d9c00?, 0x2238390?})
+	/usr/local/go/src/runtime/panic.go:770 +0x124
+github.com/spinkube/spin-operator/internal/runtimeconfig.renderOptionsIntoMap({0x40003aab40, 0x6}, {0x40003aab10, 0x7}, {0x4000200730, 0x2, 0x400083f848?}, 0x4000498330, 0x4000498360)
+	/workspace/internal/runtimeconfig/types.go:103 +0xf8
+github.com/spinkube/spin-operator/internal/runtimeconfig.(*Spin).AddSQLiteDatabase(0x4000498450, {0x40003aab20, 0x6}, {0x40003aab40, 0x6}, {0x40003aab10, 0x7}, 0x4000498330, 0x4000498360, {0x4000200730, ...})
+	/workspace/internal/runtimeconfig/types.go:70 +0xd4
+github.com/spinkube/spin-operator/internal/runtimeconfig.(*K8sBuilder).Build(0x400083fae8, {0x1655280, 0x4000794930}, 0x400073e508)
+	/workspace/internal/runtimeconfig/runtime_config.go:143 +0x368
+github.com/spinkube/spin-operator/internal/controller.(*SpinAppReconciler).reconcileDeployment(0x4000499110, {0x1655280, 0x4000794930}, 0x400073e508, 0x4000708380)
+	/workspace/internal/controller/spinapp_controller.go:232 +0x110
+github.com/spinkube/spin-operator/internal/controller.(*SpinAppReconciler).Reconcile(0x4000499110, {0x1655280, 0x4000794930}, {{{0x40003aab10?, 0x5?}, {0x40003aab0c?, 0x400063cd08?}}})
+	/workspace/internal/controller/spinapp_controller.go:126 +0x1e0
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller).Reconcile(0x1658ef8?, {0x1655280?, 0x4000794930?}, {{{0x40003aab10?, 0xb?}, {0x40003aab0c?, 0x0?}}})
+	/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.17.2/pkg/internal/controller/controller.go:119 +0x8c
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller).reconcileHandler(0x40004b21e0, {0x16552b8, 0x400043be00}, {0x1252d80, 0x40005179a0})
+	/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.17.2/pkg/internal/controller/controller.go:316 +0x2dc
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller).processNextWorkItem(0x40004b21e0, {0x16552b8, 0x400043be00})
+	/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.17.2/pkg/internal/controller/controller.go:266 +0x16c
+sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller).Start.func2.2()
+	/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.17.2/pkg/internal/controller/controller.go:227 +0x74
+created by sigs.k8s.io/controller-runtime/pkg/internal/controller.(*Controller).Start.func2 in goroutine 118
+	/go/pkg/mod/sigs.k8s.io/controller-runtime@v0.17.2/pkg/internal/controller/controller.go:223 +0x404

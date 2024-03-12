@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "sql"
+version = "0.1.0"
+authors = ["Mikkel Mørk Hegnhøj <mikkel@fermyon.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "sql"
+
+[component.sql]
+source = "target/wasm32-wasi/release/sql.wasm"
+sqlite_databases = ["sqlite"]
+[component.sql.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]

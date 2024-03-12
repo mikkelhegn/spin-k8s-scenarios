@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "rust-hello"
+version = "0.1.0"
+authors = ["Mikkel Mørk Hegnhøj <mikkel@fermyon.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "rust-hello"
+
+[component.rust-hello]
+source = "target/wasm32-wasi/release/rust_hello.wasm"
+allowed_outbound_hosts = []
+[component.rust-hello.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]

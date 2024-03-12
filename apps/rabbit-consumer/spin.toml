@@ -1,0 +1,18 @@
+spin_manifest_version = 2
+
+[application]
+name = "rabbit-consumer"
+version = "0.1.0"
+authors = ["Mikkel Mørk Hegnhøj <mikkel@fermyon.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "rabbit-consumer"
+
+[component.rabbit-consumer]
+source = "target/wasm32-wasi/release/rabbit_consumer.wasm"
+allowed_outbound_hosts = []
+[component.rabbit-consumer.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]

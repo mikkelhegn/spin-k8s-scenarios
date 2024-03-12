@@ -1,0 +1,40 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sqld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqld
+  template:
+    metadata:
+      labels:
+        app: sqld
+    spec:
+      containers:
+        - name: sqld
+          image: ghcr.io/mikkelhegn/sqld:latest
+          ports:
+            - containerPort: 8080
+              name: sqld
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app: sqld
+  labels:
+    app: sqld
+  name: sqld
+spec:
+  ports:
+  - name: tcp-sqld
+    port: 8080
+    protocol: TCP
+    targetPort: sqld
+  selector:
+    app: sqld
+  type: ClusterIP
