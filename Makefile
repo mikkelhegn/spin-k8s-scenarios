@@ -31,20 +31,20 @@ scenario_4: create_k3d_cluster deploy_spin_operator deploy_rabbitmq deploy-dapr 
 create_k3d_cluster:
 	k3d cluster delete $(CLUSTER_NAME)
 	k3d cluster create $(CLUSTER_NAME) \
-		--image ghcr.io/deislabs/containerd-wasm-shims/examples/k3d:v0.11.0 \
+		--image ghcr.io/spinkube/containerd-shim-spin/k3d:v0.13.0 \
 		-p "8081:80@loadbalancer" \
 		--servers-memory 10G \
 		--agents $(AGENTS)
 
 ### Deploy Spin Operator
 deploy_spin_operator: deploy_cert_manager 
-	kubectl apply -f https://github.com/spinkube/spin-operator/releases/download/v0.0.2/spin-operator.crds.yaml
-	kubectl apply -f https://github.com/spinkube/spin-operator/releases/download/v0.0.2/spin-operator.runtime-class.yaml
+	kubectl apply -f https://github.com/spinkube/spin-operator/releases/download/v0.1.0/spin-operator.crds.yaml
+	kubectl apply -f https://github.com/spinkube/spin-operator/releases/download/v0.1.0/spin-operator.runtime-class.yaml
 
-	helm install spin-operator --namespace spin-operator --create-namespace --devel --wait oci://ghcr.io/spinkube/spin-operator
+	helm install spin-operator --namespace spin-operator --create-namespace --version 0.1.0 --wait oci://ghcr.io/spinkube/charts/spin-operator
 	
-	kubectl apply -f https://raw.githubusercontent.com/spinkube/spin-operator/v0.0.2/config/samples/spin-shim-executor.yaml
-	kubectl apply -f https://raw.githubusercontent.com/spinkube/spin-operator/v0.0.2/config/samples/spin-runtime-class.yaml
+	kubectl apply -f https://raw.githubusercontent.com/spinkube/spin-operator/v0.1.0/config/samples/spin-shim-executor.yaml
+	kubectl apply -f https://raw.githubusercontent.com/spinkube/spin-operator/v0.1.0/config/samples/spin-runtime-class.yaml
 
 ### Deploy Cert Manager
 deploy_cert_manager:

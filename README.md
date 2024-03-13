@@ -40,8 +40,6 @@ make k3d_scenario_2
 
 ## Scenario 3 - Using Sqlite on K3d
 
-Note: Currently not working due to: https://github.com/spinkube/spin-operator/issues/174
-
 1. Create a local k3d cluster with the Spin shim and runtime classes.
 2. Install sqld, and deploy an application using sqlite as the backing store for wasi-sqlite.
 
@@ -51,7 +49,7 @@ make k3d_scenario_3
 
 ## Scenario 4 - K3d, RabbitMQ, Dapr, and a consumer app
 
-Note: This currently is only supported using an aarch-base Mac. You'll need to change how the produce app is built to run on another architecture.
+Note: The container image used to produce messags fr the queue currently only support aarch (Mac M). You can produce messages for the qeue directly from the RabbitMS console as an alternative.
 
 1. Create a local k3d cluster with the Spin shim and runtime classes.
 2. Deploy RabbitMQ and Dapr
