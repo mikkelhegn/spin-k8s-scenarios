@@ -3,6 +3,7 @@ IMG_REPO := ttl.sh
 CLUSTER_NAME := spin-k8s
 AGENTS := 0
 AARCH := true
+CONTAINERD_SHIM_SPIN_VERSION := v0.14.0
 
 # Bending the rules of make as a tool
 .PHONY: *
@@ -31,7 +32,7 @@ scenario_4: create_k3d_cluster deploy_spin_operator deploy_rabbitmq deploy-dapr 
 create_k3d_cluster:
 	k3d cluster delete $(CLUSTER_NAME)
 	k3d cluster create $(CLUSTER_NAME) \
-		--image ghcr.io/spinkube/containerd-shim-spin/k3d:v0.13.0 \
+		--image ghcr.io/spinkube/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
 		-p "8081:80@loadbalancer" \
 		--servers-memory 10G \
 		--agents $(AGENTS)
