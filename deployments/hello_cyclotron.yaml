@@ -3,6 +3,6 @@ kind: SpinApp
 metadata:
   name: rust-hello
 spec:
-  image: {{IMG_REPO}}
-  replicas: 1 
-  executor: containerd-shim-spin
+  image: ttl.sh/rust-hello:1h
+  replicas: 2
+  executor: cyclotron

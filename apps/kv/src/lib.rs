@@ -16,11 +16,13 @@ fn handle_kv(_req: Request) -> anyhow::Result<impl IntoResponse> {
 
     let count: Counter = match store.get_json::<Counter>("counter").unwrap() {
         Some(c) => {
+            println!("Updating counter");
             Counter {
                 count: c.count + 1
             }
         },
         None => {
+            println!("Creating new counter and setting it to 1");
             Counter {
                 count: 1
             }

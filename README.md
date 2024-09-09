@@ -26,7 +26,7 @@ You can either run the scenarios in total (including setitng up and tearing down
 2. Install a [Hello World app](./apps/rust-hello/) using SpinKube
 
 ```shell
-make scenario_1
+make scenario_1_hello_world
 ```
 
 ## Scenario 2 - Using KV on K3d
@@ -35,7 +35,7 @@ make scenario_1
 2. Install Redis, and deploy an application using Redis as the backing store for wasi-keyvalue.
 
 ```shell
-make k3d_scenario_2
+make scenario_2_kv_with_redis
 ```
 
 ## Scenario 3 - Using Sqlite on K3d
@@ -44,7 +44,7 @@ make k3d_scenario_2
 2. Install sqld, and deploy an application using sqlite as the backing store for wasi-sqlite.
 
 ```shell
-make k3d_scenario_3
+make scenario_3_sql_and_sqld
 ```
 
 ## Scenario 4 - K3d, RabbitMQ, Dapr, and a consumer app
@@ -57,9 +57,9 @@ Note: The container image used to produce messags fr the queue currently only su
 4. Manually - Run the Producer app to app messages to the queue
 
 ```shell
-make k3d_scenario_4
+make scenario_4_rabbitmq_dapr
 
-To see the rabbit queue:
+To load data to the rabbit queue:
 kubectl run producer -it --rm --image=ghcr.io/mikkelhegn/producer rabbit-producer
 ```
 
