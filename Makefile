@@ -5,6 +5,7 @@ AGENTS := 0
 AARCH := true
 CONTAINERD_SHIM_SPIN_VERSION := v0.15.1
 SPINKUBE_VERSION := 0.3.0
+AKS_SPINKUBE_MARKETPLACE_INSTALLED := false
 
 # Bending the rules of make as a tool
 .PHONY: *
@@ -12,20 +13,36 @@ SPINKUBE_VERSION := 0.3.0
 # Scenarios to show various Spin on Kubernetes features and use-cases
 
 ## Hello World app deployed in k3d
+ifeq ($(AKS_SPINKUBE_MARKETPLACE_INSTALLED), true)
+scenario_1_hello_world: deploy_otel_stack build_hw_app deploy_hw_app
+else
 scenario_1_hello_world: create_k3d_cluster deploy_otel_stack deploy_spin_operator build_hw_app deploy_hw_app
+endif
 
 ## App using wasi-keyvalue deployed in k3d, backed by redis
+ifeq ($(AKS_SPINKUBE_MARKETPLACE_INSTALLED), true)
+scenario_2_kv_with_redis: deploy_otel_stack deploy_redis build_kv_app deploy_kv_app
+else
 scenario_2_kv_with_redis: create_k3d_cluster deploy_otel_stack deploy_spin_operator deploy_redis build_kv_app deploy_kv_app
+endif
 
 ## App using wasi-sqlite deployed in k3d, backed by sqld
+ifeq ($(AKS_SPINKUBE_MARKETPLACE_INSTALLED), true)
+scenario_3_sql_and_sqld: deploy_otel_stack deploy_sqld build_sql_app deploy_sql_app
+else
 scenario_3_sql_and_sqld: create_k3d_cluster deploy_otel_stack deploy_spin_operator deploy_sqld build_sql_app deploy_sql_app
+endif
 
 ## App consuming messages from a RabbitMQ queue. Includes Rabbit, Dapr, a consumer app and an app to produce messages
+ifeq ($(AKS_SPINKUBE_MARKETPLACE_INSTALLED), true)
+scenario_4_rabbitmq_dapr: deploy_otel_stack deploy_rabbitmq deploy-dapr consumer_app_bpd rabbit_producer_bp
+	$(info Run `kubectl logs -l core.spinoperator.dev/app-name=rabbit-consumer -f` to follow logs from the consumer.)
+	$(info In another shell, run `make rabbit_producer_run` to add messages to the queue.)
+else
 scenario_4_rabbitmq_dapr: create_k3d_cluster deploy_otel_stack deploy_spin_operator deploy_rabbitmq deploy-dapr consumer_app_bpd rabbit_producer_bp
 	$(info Run `kubectl logs -l core.spinoperator.dev/app-name=rabbit-consumer -f` to follow logs from the consumer.)
 	$(info In another shell, run `make rabbit_producer_run` to add messages to the queue.)
-
-
+endif
 # Individual tasks, which can be re-used across scenarios
 
 ## Cluster tasks
@@ -39,11 +56,19 @@ create_k3d_cluster:
 		--agents $(AGENTS)
 
 ### Deploy OTEL stack
+ifeq ($(AKS_SPINKUBE_MARKETPLACE_INSTALLED), true)
+deploy_otel_stack:
+	kubectl create namespace observability
+	kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.60.0/jaeger-operator.yaml -n observability
+	sleep 20
+	kubectl apply -f deployments/jaeger-simple.yaml
+else
 deploy_otel_stack: deploy_cert_manager
 	kubectl create namespace observability
 	kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.60.0/jaeger-operator.yaml -n observability
 	sleep 10
 	kubectl apply -f deployments/jaeger-simple.yaml
+endif
 
 ### Deploy Spin Operator
 deploy_spin_operator:
@@ -71,7 +96,7 @@ build_hw_app:
 ### Deploy Hello World app
 deploy_hw_app:
 	cat deployments/rust_hello.yaml | sed "s,{{IMG_REPO}},$(IMG_REPO)/rust-hello:1h," | kubectl apply -f -
-	$(info run `kubectl port-forward svc/rust_hello 8080:80` and `curl -i localhost:8080`)
+	$(info run `kubectl port-forward svc/rust-hello 8080:80` and `curl -i localhost:8080`)
 
 # Build app using wasi-keyvalue
 build_kv_app:
