@@ -1,0 +1,40 @@
+snippet_version = "v1.0.0"
+
+[snippet]
+name = "delete_create_k3d_cluster"
+description = "Deletes and creates a new K3D Cluster"
+
+[[snippet.commands]]
+name = "Delete cluster"
+command = "k3d cluster delete $name"
+
+[[snippet.commands]]
+name = "Create cluster"
+command = """\
+  k3d cluster create $(CLUSTER_NAME) \
+  --image ghcr.io/spinkube/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
+  -p $(SERVER_PORT):80@loadbalancer \
+  --server-memory (MEMORY_GB)G \
+  --agents $(AGENTS) \
+  k3d cluster delete $name \
+  """
+
+[[snippet.variables]]
+name = "CLUSTER_NAME"
+value = "spin-k8s"
+
+[[snippet.variables]]
+name = "CONTAINERD_SHIM_SPIN_VERSION"
+value = "v0.17.0"
+
+[[snippet.variables]]
+name = "AGENTS"
+value = "0"
+
+[[snippet.variables]]
+name = "MEMORY_GB"
+value = "10"
+
+[[snippet.variables]]
+name = "SERVER_PORT"
+value = "8081"
