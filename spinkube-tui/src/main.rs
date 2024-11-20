@@ -1,13 +1,12 @@
 use anyhow::Error;
 use serde::{Deserialize, Serialize};
-use std::io::{self};
+use std::io;
 
 use ratatui::{
-    crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
-    layout::{Constraint, Direction, Layout},
-    style::{Style, Stylize},
-    widgets::{Block, List, ListItem, ListState, Padding, Paragraph},
-    DefaultTerminal, Frame,
+    crossterm::event::{self, Event, KeyCode, KeyEventKind},
+    layout::{Alignment, Constraint, Direction, Flex, Layout, Rect},
+    widgets::{Block, Borders, List, ListItem, ListState, Padding, Paragraph},
+    Frame,
 };
 
 fn main() -> io::Result<()> {
@@ -42,13 +41,42 @@ fn run(terminal: &mut ratatui::DefaultTerminal) -> std::io::Result<()> {
 }
 
 fn draw(frame: &mut Frame) {
+    // SnippetsList state
     let mut snippets_list = SnippetsList::new(load_snippets().expect("Failed to get scnearios"));
 
-    let text = Paragraph::new("Hello World!");
-    let list: List<'_> = List::new(snippets_list.snippets);
+    // Layout
+    let [top, main, bottom] = Layout::vertical([
+        Constraint::Length(3),
+        Constraint::Fill(2),
+        Constraint::Length(5),
+    ])
+    .margin(2)
+    .flex(Flex::Center)
+    .areas(frame.area());
 
-    frame.render_widget(text, frame.area());
-    frame.render_stateful_widget(list, frame.area(), &mut snippets_list.state);
+    let top = Layout::horizontal([Constraint::Percentage(100)])
+        .flex(Flex::Center)
+        .split(top);
+
+    let main =
+        Layout::horizontal([Constraint::Percentage(50), Constraint::Percentage(50)]).split(main);
+
+    let bottom = Layout::horizontal([Constraint::Percentage(100)])
+        .flex(Flex::Center)
+        .split(bottom);
+
+    let block = Block::default().borders(Borders::ALL);
+
+    let text_top = Paragraph::new("Hello World!").centered();
+    let text_temp = Paragraph::new("Hello Bottom!").block(block.clone().title("Scenarios"));
+    let list: List<'_> = List::new(snippets_list.snippets).block(block.clone().title("Snippets"));
+    // TODO split bottom in two and create two bottons
+    let text_bottom = Paragraph::new("Hello Bottom!").centered();
+
+    frame.render_widget(text_top, top[0]);
+    frame.render_widget(text_temp, main[0]);
+    frame.render_stateful_widget(list, main[1], &mut snippets_list.state);
+    frame.render_widget(text_bottom, bottom[0]);
 }
 
 fn handle_events() -> std::io::Result<bool> {
