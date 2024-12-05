@@ -54,7 +54,7 @@ Note: The container image used to produce messags fr the queue currently only su
 1. Create a local k3d cluster with the Spin shim and runtime classes.
 2. Deploy RabbitMQ and Dapr
 3. Deploy consumer app and Dapr bindings
-4. Manually - Run the Producer app to app messages to the queue
+4. Manually - Run the Producer app to add messages to the queue
 
 ```shell
 make scenario_4_rabbitmq_dapr
