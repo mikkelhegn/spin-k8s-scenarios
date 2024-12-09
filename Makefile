@@ -1,7 +1,7 @@
 # Variables - NOT ALL ARE IMPLEMENTED
 IMG_REPO := ttl.sh
 CLUSTER_NAME := spin-k8s
-AGENTS := 0
+AGENTS := 2
 AARCH := true
 CONTAINERD_SHIM_SPIN_VERSION := v0.17.0
 SPINKUBE_VERSION := 0.4.0
@@ -26,6 +26,9 @@ scenario_4_rabbitmq_dapr: create_full_cluster deploy_rabbitmq deploy-dapr consum
 	$(info Run `kubectl logs -l core.spinoperator.dev/app-name=rabbit-consumer -f` to follow logs from the consumer.)
 	$(info In another shell, run `make rabbit_producer_run` to add messages to the queue.)
 
+## Selective deployment with composed application
+scenario_5_selective_composed: create_full_cluster deploy_selective_app
+
 ## Cluster create
 create_full_cluster: create_k3d_cluster deploy_otel_stack deploy_spin_operator
 
@@ -35,8 +38,13 @@ create_full_cluster: create_k3d_cluster deploy_otel_stack deploy_spin_operator
 ### Deletes and creates a k3d cluster using containerd-shim image
 create_k3d_cluster:
 	k3d cluster delete $(CLUSTER_NAME)
-	k3d cluster create $(CLUSTER_NAME) \
+##	k3d cluster create $(CLUSTER_NAME) \
 		--image ghcr.io/spinkube/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
+		-p "8081:80@loadbalancer" \
+		--servers-memory 10G \
+		--agents $(AGENTS)
+	k3d cluster create $(CLUSTER_NAME) \
+		--image ghcr.io/radu-matei/tmp-containerd-shim-spin/k3d:v0.17.2 \
 		-p "8081:80@loadbalancer" \
 		--servers-memory 10G \
 		--agents $(AGENTS)
@@ -151,3 +159,11 @@ rabbit_producer_bp:
 # Run the app to produce 100 messages to a Rabbit queue
 rabbit_producer_run:
 	kubectl run producer -i --rm --image=$(IMG_REPO)/producer --restart=Never --command -- ./rabbit-producer --queue test --server amqp://rabbitmq --messages 100
+
+# Build and deploy an application using selective deployment
+deploy_selective_app:
+	pushd apps/selective-deploy/frontend && npm install && popd
+	pushd apps/selective-deploy/backend && npm install && popd
+	spin build -f apps/selective-deploy/spin.toml
+	spin registry push -f apps/selective-deploy/spin.toml $(IMG_REPO)/selective-deploy-app:1h
+	cat deployments/selective-app.yaml | sed "s,{{IMG_REPO}},$(IMG_REPO)/selective-deploy-app:1h," | kubectl apply -f -

@@ -1,0 +1,23 @@
+apiVersion: core.spinkube.dev/v1alpha1
+kind: SpinApp
+metadata:
+  name: selective-deploy-app-frontend
+spec:
+  image: {{IMG_REPO}}
+  executor: containerd-shim-spin
+  replicas: 1
+  components:
+  - frontend
+
+---
+
+apiVersion: core.spinkube.dev/v1alpha1
+kind: SpinApp
+metadata:
+  name: selective-deploy-app-backend
+spec:
+  image: {{IMG_REPO}}
+  executor: containerd-shim-spin
+  replicas: 1
+  components:
+  - backend

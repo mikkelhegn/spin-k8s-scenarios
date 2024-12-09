@@ -1,0 +1,37 @@
+spin_manifest_version = 2
+
+[application]
+name = "selective-deploy"
+version = "0.1.0"
+authors = ["Mikkel Mørk Hegnhøj <mikkel@fermyon.com>"]
+description = ""
+
+[[trigger.http]]
+route = "/..."
+component = "frontend"
+
+[component.frontend]
+source = "frontend/target/frontend.wasm"
+#allowed_outbound_hosts = ["http://backend.spin.internal"]
+allowed_outbound_hosts = ["http://self", "https://self"]
+
+[component.frontend.build]
+command = "npm run build"
+workdir = "frontend"
+watch = ["src/*"]
+
+[[trigger.http]]
+route = "/images/..."
+component = "backend"
+
+[component.backend]
+source = "backend/target/image-manipulation-http-ts.wasm"
+key_value_stores = ["default"]
+
+[component.backend.build]
+command = "npm run build"
+workdir = "backend"
+
+[component.backend.dependencies]
+"component:image-manipulation-lib/image-manipulation" = { version = "^6.0.0", registry = "fermyon.com", package = "fermyon-experimental:image-manipulation-lib" }
+
