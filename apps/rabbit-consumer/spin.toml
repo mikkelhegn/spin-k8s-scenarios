@@ -11,8 +11,8 @@ route = "/..."
 component = "rabbit-consumer"
 
 [component.rabbit-consumer]
-source = "target/wasm32-wasi/release/rabbit_consumer.wasm"
+source = "target/wasm32-wasip1/release/rabbit_consumer.wasm"
 allowed_outbound_hosts = []
 [component.rabbit-consumer.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

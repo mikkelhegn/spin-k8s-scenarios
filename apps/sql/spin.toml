@@ -11,8 +11,8 @@ route = "/..."
 component = "sql"
 
 [component.sql]
-source = "target/wasm32-wasi/release/sql.wasm"
+source = "target/wasm32-wasip1/release/sql.wasm"
 sqlite_databases = ["sqlite"]
 [component.sql.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

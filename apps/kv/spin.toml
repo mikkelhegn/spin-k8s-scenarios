@@ -11,8 +11,8 @@ route = "/..."
 component = "kv"
 
 [component.kv]
-source = "target/wasm32-wasi/release/kv.wasm"
+source = "target/wasm32-wasip1/release/kv.wasm"
 key_value_stores = ["redis"]
 [component.kv.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

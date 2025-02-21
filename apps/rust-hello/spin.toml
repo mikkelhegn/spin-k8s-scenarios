@@ -11,8 +11,8 @@ route = "/..."
 component = "rust-hello"
 
 [component.rust-hello]
-source = "target/wasm32-wasi/release/rust_hello.wasm"
+source = "target/wasm32-wasip1/release/rust_hello.wasm"
 allowed_outbound_hosts = []
 [component.rust-hello.build]
-command = "cargo build --target wasm32-wasi --release"
+command = "cargo build --target wasm32-wasip1 --release"
 watch = ["src/**/*.rs", "Cargo.toml"]

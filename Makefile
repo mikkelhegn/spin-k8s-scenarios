@@ -3,7 +3,7 @@ IMG_REPO := ttl.sh
 CLUSTER_NAME := spin-k8s
 AGENTS := 2
 AARCH := true
-CONTAINERD_SHIM_SPIN_VERSION := v0.17.0
+CONTAINERD_SHIM_SPIN_VERSION := v0.18.0
 SPINKUBE_VERSION := 0.4.0
 OTEL_STACK := jaeger # Supported options: Jaeger
 
@@ -23,7 +23,7 @@ scenario_3_sql_and_sqld: create_full_cluster deploy_sqld build_sql_app deploy_sq
 
 ## App consuming messages from a RabbitMQ queue. Includes Rabbit, Dapr, a consumer app and an app to produce messages
 scenario_4_rabbitmq_dapr: create_full_cluster deploy_rabbitmq deploy-dapr consumer_app_bpd rabbit_producer_bp
-	$(info Run `kubectl logs -l core.spinoperator.dev/app-name=rabbit-consumer -f` to follow logs from the consumer.)
+	$(info Run `kubectl logs -l core.spinkube.dev/app-name=rabbit-consumer -f` to follow logs from the consumer.)
 	$(info In another shell, run `make rabbit_producer_run` to add messages to the queue.)
 
 ## Selective deployment with composed application
@@ -38,13 +38,8 @@ create_full_cluster: create_k3d_cluster deploy_otel_stack deploy_spin_operator
 ### Deletes and creates a k3d cluster using containerd-shim image
 create_k3d_cluster:
 	k3d cluster delete $(CLUSTER_NAME)
-##	k3d cluster create $(CLUSTER_NAME) \
-		--image ghcr.io/spinkube/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
-		-p "8081:80@loadbalancer" \
-		--servers-memory 10G \
-		--agents $(AGENTS)
 	k3d cluster create $(CLUSTER_NAME) \
-		--image ghcr.io/radu-matei/tmp-containerd-shim-spin/k3d:v0.17.2 \
+		--image ghcr.io/spinkube/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
 		-p "8081:80@loadbalancer" \
 		--servers-memory 10G \
 		--agents $(AGENTS)
