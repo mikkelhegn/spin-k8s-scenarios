@@ -1,11 +1,15 @@
 # Variables - NOT ALL ARE IMPLEMENTED
 IMG_REPO := ttl.sh
 CLUSTER_NAME := spin-k8s
-AGENTS := 2
+NODE_COUNT := 2
 AARCH := true
 CONTAINERD_SHIM_SPIN_VERSION := v0.18.0
-SPINKUBE_VERSION := 0.4.0
+SPINKUBE_OPERATOR_VERSION := 0.5.0
 OTEL_STACK := jaeger # Supported options: Jaeger
+PREFIX := $(shell bash -c 'mktemp -u XXXX')
+AZURE_REGION := northeurope
+VM_SKU := Standard_D2plds_v6
+OS_SKU := AzureLinux
 
 # Bending the rules of make as a tool
 .PHONY: *
@@ -29,8 +33,11 @@ scenario_4_rabbitmq_dapr: create_full_cluster deploy_rabbitmq deploy-dapr consum
 ## Selective deployment with composed application
 scenario_5_selective_composed: create_full_cluster deploy_selective_app
 
+## AKS Cluster with spinkube and FP4K
+scenario_6_aks: create_aks_cluster deploy_cert_manager deploy_spin_operator deploy_kwasm_operator
+
 ## Cluster create
-create_full_cluster: create_k3d_cluster deploy_otel_stack deploy_spin_operator
+create_full_cluster: create_k3d_cluster deploy_cert_manager deploy_otel_stack deploy_spin_operator
 
 # Individual tasks, which can be re-used across scenarios
 
@@ -42,10 +49,38 @@ create_k3d_cluster:
 		--image ghcr.io/spinkube/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
 		-p "8081:80@loadbalancer" \
 		--servers-memory 10G \
-		--agents $(AGENTS)
+		--agents $(NODE_COUNT)
 
-### Deploy OTEL stack
-deploy_otel_stack: deploy_cert_manager
+### Creates an AKS cluster
+create_aks_cluster:
+	az group create --name aks-spin-$(PREFIX) \
+		--location $(AZURE_REGION)
+	az aks create --name aks-spin-$(PREFIX) \
+    	--resource-group aks-spin-$(PREFIX) \
+    	--location $(AZURE_REGION) \
+    	--node-count $(NODE_COUNT) \
+    	--tier free \
+    	--node-vm-size $(VM_SKU) \
+    	--os-sku $(OS_SKU) \
+    	--network-plugin azure \
+    	--generate-ssh-keys
+	az aks get-credentials --name aks-spin-$(PREFIX) \
+		--resource-group as-spin-$(PREFIX)
+
+deploy_kwasm_operator:
+	helm repo add kwasm http://kwasm.sh/kwasm-operator/
+	helm repo update
+	helm install \
+		kwasm-operator kwasm/kwasm-operator \
+		--namespace kwasm \
+		--create-namespace \
+		--set kwasmOperator.installerImage=ghcr.io/spinkube/containerd-shim-spin/node-installer:v0.18.0
+	kubectl annotate node --all kwasm.sh/kwasm-node=true
+	# Waiting for a number of "Completed" statements in the kwasm logs, which equals the number of agents.
+	RESULT=0; until [ $$RESULT -eq ${NODE_COUNT} ]; do RESULT=$$(kubectl logs -n kwasm -l app.kubernetes.io/name=kwasm-operator | grep Completed | wc -l); echo "Waiting for kwasm..."; sleep 5; done
+
+###Deploy OTEL stack
+deploy_otel_stack:
 	kubectl create namespace observability
 	kubectl create -f https://github.com/jaegertracing/jaeger-operator/releases/download/v1.62.0/jaeger-operator.yaml -n observability
 	kubectl wait --for=jsonpath='{status.availableReplicas}'=1 deployment jaeger-operator -n observability --timeout 60s
@@ -53,20 +88,19 @@ deploy_otel_stack: deploy_cert_manager
 
 ### Deploy Spin Operator
 deploy_spin_operator:
-	kubectl apply -f https://github.com/spinkube/spin-operator/releases/download/v$(SPINKUBE_VERSION)/spin-operator.crds.yaml
-	kubectl apply -f https://github.com/spinkube/spin-operator/releases/download/v$(SPINKUBE_VERSION)/spin-operator.runtime-class.yaml
-	helm install spin-operator --namespace spin-operator --create-namespace --version $(SPINKUBE_VERSION) --wait oci://ghcr.io/spinkube/charts/spin-operator
-	# kubectl apply -f https://github.com/spinkube/spin-operator/releases/download/v$(SPINKUBE_VERSION)/spin-operator.shim-executor.yaml
+	kubectl apply -f https://github.com/spinframework/spin-operator/releases/download/v$(SPINKUBE_OPERATOR_VERSION)/spin-operator.crds.yaml
+	kubectl apply -f https://github.com/spinframework/spin-operator/releases/download/v$(SPINKUBE_OPERATOR_VERSION)/spin-operator.runtime-class.yaml
+	helm install spin-operator --namespace spin-operator --create-namespace --version $(SPINKUBE_OPERATOR_VERSION) --wait oci://ghcr.io/spinframework/charts/spin-operator
+	kubectl apply -f https://github.com/spinframework/spin-operator/releases/download/v$(SPINKUBE_OPERATOR_VERSION)/spin-operator.shim-executor.yaml
 	# Use local deployment for executor to inject OTEL configuration
-	kubectl apply -f deployments/spin-operator.shim-executor.yaml
+	# kubectl apply -f deployments/spin-operator.shim-executor.yaml
 
 ### Deploy Cert Manager
 deploy_cert_manager:
-	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.1/cert-manager.crds.yaml
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.1/cert-manager.crds.yaml
 	helm repo add jetstack https://charts.jetstack.io
 	helm repo update
-	helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.16.1 --wait
-
+	helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.1 --wait
 
 ## Apps
 ### Build Hello World app
