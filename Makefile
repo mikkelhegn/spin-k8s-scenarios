@@ -3,8 +3,8 @@ IMG_REPO := ttl.sh
 CLUSTER_NAME := spin-k8s
 NODE_COUNT := 2
 AARCH := true
-CONTAINERD_SHIM_SPIN_VERSION := v0.18.0
-SPINKUBE_OPERATOR_VERSION := 0.5.0
+CONTAINERD_SHIM_SPIN_VERSION := v0.22.0
+SPINKUBE_OPERATOR_VERSION := 0.6.1
 OTEL_STACK := jaeger # Supported options: Jaeger
 PREFIX := $(shell bash -c 'mktemp -u XXXX')
 AZURE_REGION := northeurope
@@ -37,7 +37,7 @@ scenario_5_selective_composed: create_full_cluster deploy_selective_app
 scenario_6_aks: create_aks_cluster deploy_cert_manager deploy_spin_operator deploy_kwasm_operator
 
 ## Cluster create
-create_full_cluster: create_k3d_cluster deploy_cert_manager deploy_otel_stack deploy_spin_operator
+create_full_cluster: create_k3d_cluster deploy_cert_manager deploy_spin_operator
 
 # Individual tasks, which can be re-used across scenarios
 
@@ -46,7 +46,7 @@ create_full_cluster: create_k3d_cluster deploy_cert_manager deploy_otel_stack de
 create_k3d_cluster:
 	k3d cluster delete $(CLUSTER_NAME)
 	k3d cluster create $(CLUSTER_NAME) \
-		--image ghcr.io/spinkube/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
+		--image ghcr.io/spinframework/containerd-shim-spin/k3d:$(CONTAINERD_SHIM_SPIN_VERSION) \
 		-p "8081:80@loadbalancer" \
 		--servers-memory 10G \
 		--agents $(NODE_COUNT)
@@ -74,7 +74,7 @@ deploy_kwasm_operator:
 		kwasm-operator kwasm/kwasm-operator \
 		--namespace kwasm \
 		--create-namespace \
-		--set kwasmOperator.installerImage=ghcr.io/spinkube/containerd-shim-spin/node-installer:v0.18.0
+		--set kwasmOperator.installerImage=ghcr.io/spinframework/containerd-shim-spin/node-installer:v0.18.0
 	kubectl annotate node --all kwasm.sh/kwasm-node=true
 	# Waiting for a number of "Completed" statements in the kwasm logs, which equals the number of agents.
 	RESULT=0; until [ $$RESULT -eq ${NODE_COUNT} ]; do RESULT=$$(kubectl logs -n kwasm -l app.kubernetes.io/name=kwasm-operator | grep Completed | wc -l); echo "Waiting for kwasm..."; sleep 5; done

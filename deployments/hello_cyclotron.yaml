@@ -1,8 +1,0 @@
-apiVersion: core.spinkube.dev/v1alpha1
-kind: SpinApp
-metadata:
-  name: rust-hello
-spec:
-  image: ttl.sh/rust-hello:1h
-  replicas: 2
-  executor: cyclotron
