@@ -3,7 +3,7 @@ IMG_REPO := ttl.sh
 CLUSTER_NAME := spin-k8s
 NODE_COUNT := 2
 AARCH := true
-CONTAINERD_SHIM_SPIN_VERSION := v0.22.0
+CONTAINERD_SHIM_SPIN_VERSION := v0.25.1
 SPINKUBE_OPERATOR_VERSION := 0.6.1
 OTEL_STACK := jaeger # Supported options: Jaeger
 PREFIX := $(shell bash -c 'mktemp -u XXXX')
@@ -37,7 +37,7 @@ scenario_5_selective_composed: create_full_cluster deploy_selective_app
 scenario_6_aks: create_aks_cluster deploy_cert_manager deploy_spin_operator deploy_kwasm_operator
 
 ## Cluster create
-create_full_cluster: create_k3d_cluster deploy_cert_manager deploy_spin_operator
+create_full_cluster: create_kind_cluster deploy_cert_manager deploy_spin_operator
 
 # Individual tasks, which can be re-used across scenarios
 
@@ -50,6 +50,12 @@ create_k3d_cluster:
 		-p "8081:80@loadbalancer" \
 		--servers-memory 10G \
 		--agents $(NODE_COUNT)
+
+create_kind_cluster:
+	kind delete cluster --name wasm-cluster-scale || true
+	kind create cluster --name wasm-cluster-scale \
+		--image ghcr.io/spinframework/containerd-shim-spin/kind:$(CONTAINERD_SHIM_SPIN_VERSION) \
+		--config=deployments/kind-config.yaml
 
 ### Creates an AKS cluster
 create_aks_cluster:
@@ -97,10 +103,10 @@ deploy_spin_operator:
 
 ### Deploy Cert Manager
 deploy_cert_manager:
-	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.1/cert-manager.crds.yaml
+	kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.20.0/cert-manager.crds.yaml
 	helm repo add jetstack https://charts.jetstack.io
 	helm repo update
-	helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.1 --wait
+	helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.20.0 --wait
 
 ## Apps
 ### Build Hello World app
